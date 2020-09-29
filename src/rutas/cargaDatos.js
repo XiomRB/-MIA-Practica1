@@ -29,6 +29,7 @@ IGNORE 1 LINES
 SET fecha_registro = STR_TO_DATE (@varfecha,'%d/%m/%Y');`
 
 var borrarTemp = 'DROP TABLE carga'
+
 exports.borrarTemp = borrarTemp
 exports.cargaMasiva = cargaMasiva
 exports.tablatemp = tablatemp

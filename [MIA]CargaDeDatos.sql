@@ -1,4 +1,4 @@
-DROP TABLE carga
+DROP TEMPORARY TABLE carga;
 
 CREATE TEMPORARY TABLE carga(
     nombre_compania VARCHAR(50),
@@ -29,7 +29,3 @@ LINES TERMINATED BY '\r\n'
 IGNORE 1 LINES
 (nombre_compania,contacto_compania,correo_compania,telefono_compania,tipo,nombre,correo,telefono,@varfecha,direccion,ciudad,codigo_postal,region,producto,categoria_producto,cantidad,precio_unitario)
 SET fecha_registro = STR_TO_DATE (@varfecha,'%d/%m/%Y');
-
-
--------------------------------------------------------INGRESO DE DATOS A TABLAS-----------------------------------------------------
-
