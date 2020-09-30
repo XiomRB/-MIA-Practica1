@@ -1,85 +1,133 @@
-var tablaCat = `CREATE TABLE Categoria(
+
+ var crearModelo = `CREATE TEMPORARY TABLE carga(
+    nombre_compania VARCHAR(50),
+    contacto_compania VARCHAR(50),
+    correo_compania VARCHAR(50),
+    telefono_compania VARCHAR(15),
+    tipo CHAR,
+    nombre VARCHAR(50),
+    correo VARCHAR(50),
+    telefono VARCHAR(50),
+    fecha_registro DATE,
+    direccion VARCHAR(50),
+    ciudad VARCHAR(50),
+    codigo_postal INT,
+    region VARCHAR(50),
+    producto VARCHAR(50),
+    categoria_producto VARCHAR(50),
+    cantidad INT,
+    precio_unitario DOUBLE
+);
+
+CREATE TABLE Categoria(
     id int AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(50)
-);`
+);
 
-var tablaProd = `CREATE TABLE Producto(
+CREATE TABLE Producto(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(50) NOT NULL,
     categoria INT,
     precio DOUBLE,
     CONSTRAINT FK_Producto_categoria FOREIGN KEY (categoria) REFERENCES Categoria(id)
-);`
+);
 
-var tablaEmp = `CREATE TABLE Empresa(
+CREATE TABLE Empresa(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(50),
     correo VARCHAR(50),
     telefono VARCHAR(15),
     contacto VARCHAR(35)
-)`
+);
 
-var tablaReg = `CREATE TABLE Region(
+CREATE TABLE Region(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(25)
-);`
+);
 
-var tablaCity = `CREATE TABLE Ciudad(
+CREATE TABLE Ciudad(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(25),
     region INT,
-    postal INT,
     CONSTRAINT FK_Ciudad_region FOREIGN KEY (region) REFERENCES Region(id)
-);`
+);
 
-var tablaCust = `CREATE TABLE Cliente(
+CREATE TABLE CodigoPostal(
+    id INT NOT NULL PRIMARY KEY,
+    ciudad INT NOT NULL,
+    CONSTRAINT FK_CodigoPostal_ciudad FOREIGN KEY (ciudad) REFERENCES Ciudad(id)
+);
+
+CREATE TABLE Cliente(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(35) NOT NULL,
     correo VARCHAR(50),
     telefono VARCHAR(15),
-    direccion VARCHAR,
-    ciudad INT,
+    direccion VARCHAR(50),
+    postal INT,
     fecha_reg DATE,
-    CONSTRAINT FK_Cliente_ciudad FOREIGN KEY (ciudad) REFERENCES Ciudad(id)
-);`
+    CONSTRAINT FK_Cliente_postal FOREIGN KEY (postal) REFERENCES CodigoPostal(id)
+);
 
-var tablaProv = `CREATE TABLE Proveedor(
+CREATE TABLE Proveedor(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nombre VARCHAR(35) NOT NULL,
     correo VARCHAR(50),
     telefono VARCHAR(15),
-    direccion VARCHAR,
-    ciudad INT,
+    direccion VARCHAR(50),
+    postal INT,
     fecha_reg DATE,
-    CONSTRAINT FK_Proveedor_ciudad FOREIGN KEY (ciudad) REFERENCES Ciudad(id)
-);`
+    CONSTRAINT FK_Proveedor_postal FOREIGN KEY (postal) REFERENCES CodigoPostal(id)
+);
 
-var tablaVenta = `CREATE TABLE Venta(
+CREATE TABLE Venta(
+    id INT PRIMARY  KEY  AUTO_INCREMENT NOT NULL,
+    cliente INT NOT NULL,
+    empresa INT NOT NULL,
+    CONSTRAINT FK_Venta_cliente FOREIGN KEY (cliente) REFERENCES Cliente(id),
+    CONSTRAINT FK_Venta_empresa FOREIGN KEY (empresa) REFERENCES Empresa(id)
+);
+
+CREATE TABLE Adquisicion(
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    cliente INT,
-    CONSTRAINT FK_Venta_cliente FOREIGN KEY (cliente) REFERENCES Cliente(id)
-);`
+    proveedor INT NOT NULL,
+    empresa INT NOT NULL,
+    CONSTRAINT FK_Adquisicion_proveedor FOREIGN KEY (proveedor) REFERENCES Proveedor(id),
+    CONSTRAINT FK_Adquisicion_empresa FOREIGN KEY (empresa) REFERENCES Empresa(id)
+);
 
-var tablaAdq =`CREATE TABLE Adquisicion(
-    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    proveedor INT,
-    CONSTRAINT FK_Venta_proveedor FOREIGN KEY (proveedor) REFERENCES Proveedor(id)
-);`
-
-var tablaDetV = `CREATE TABLE DetalleVenta(
-    venta INT PRIMARY KEY NOT NULL,
-    producto INT PRIMARY KEY NOT NULL,
-    cantidad INT NOT NULL,
-    total DOUBLE,
+CREATE TABLE DetalleVenta(
+    venta INT NOT NULL,
+    producto INT NOT NULL,
+    cantidad INT,
+    subtotal DOUBLE,
+    PRIMARY KEY (venta, producto),
     CONSTRAINT FK_DetalleVenta_venta FOREIGN KEY (venta) REFERENCES Venta(id),
     CONSTRAINT FK_DetalleVenta_producto FOREIGN KEY (producto) REFERENCES Producto(id)
+);
+
+CREATE TABLE DetalleAdquisicion(
+    adquisicion INT NOT NULL,
+    producto INT NOT NULL,
+    cantidad INT,
+    subtotal DOUBLE,
+    PRIMARY KEY (adquisicion, producto),
+    CONSTRAINT FK_DetalleAdquisicion_adquisicion FOREIGN KEY (adquisicion) REFERENCES Adquisicion(id),
+    CONSTRAINT FK_DetalleAdquisicion_producto FOREIGN KEY (producto) REFERENCES Producto(id)
 );`
 
-var tablaDetA = `CREATE TABLE DetalleAdquision(
-    adquisicion INT PRIMARY KEY NOT NULL,
-    producto INT PRIMARY KEY NOT NULL,
-    cantidad INT NOT NULL,
-    total DOUBLE,
-    CONSTRAINT FK_DetallAdquisicion_adquisicion FOREIGN KEY (adquisicion) REFERENCES Adquisicion(id),
-    CONSTRAINT FK_DetalleVenta_producto FOREIGN KEY (producto) REFERENCES Producto(id)
-);`
+var borrarModelo = `DROP TABLE DetalleAdquisicion;
+DROP TABLE DetalleVenta;
+DROP TABLE Adquisicion;
+DROP TABLE Venta;
+DROP TABLE Proveedor;
+DROP TABLE Cliente;
+DROP TABLE CodigoPostal;
+DROP TABLE Ciudad;
+DROP TABLE Region;
+DROP TABLE Empresa;
+DROP TABLE Producto;
+DROP TABLE Categoria;`
+
+exports.crearModelo = crearModelo
+exports.borrarModelo = borrarModelo
